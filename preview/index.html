@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="es" data-theme="dark" data-shell="classic">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clipping — Sistema de diseño</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  body { min-height:100vh; }
+  .app { display:flex; min-height:100vh; }
+
+  /* ── Sidebar (modo clásico) ── */
+  .sidebar {
+    width:var(--sidebar-width); min-width:var(--sidebar-width); height:100vh;
+    position:sticky; top:0; overflow-y:auto;
+    background:var(--sidebar-bg); border-right:1px solid var(--border);
+    padding:20px 16px; display:flex; flex-direction:column;
+    backdrop-filter:blur(12px); z-index:10; flex-shrink:0;
+  }
+  [data-shell="modern"] .sidebar { display:none; }
+  .sidebar-header { display:flex; align-items:center; gap:10px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+  .mark { width:28px; height:28px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+          background:linear-gradient(165deg,#f0f2f5,#c7cbd1); color:#0b0d10; font:800 14px Inter,sans-serif; transform:skewX(-8deg); }
+  [data-theme="light"] .mark { background:#14181f; color:#fff; }
+  .sidebar-header .title { font:700 14px Inter,sans-serif; letter-spacing:.5px; color:var(--text-primary); }
+  .menu { display:flex; flex-direction:column; gap:3px; }
+  .menu .sep { font:700 10px Inter,sans-serif; text-transform:uppercase; letter-spacing:.14em; color:var(--text-muted-2); padding:14px 12px 6px; }
+  .menu .item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px;
+    font:500 13px Inter,sans-serif; color:var(--text-secondary); cursor:pointer; border:1px solid transparent;
+    transition:background .15s ease,color .15s ease; }
+  .menu .item:hover { background:var(--nav-hover-bg); color:var(--text-primary); }
+  .menu .item.active { background:var(--nav-active-bg); border-color:var(--accent-border); color:var(--text-primary);
+                       box-shadow:inset 0 1px 0 rgba(255,255,255,.09); }
+  .menu .item svg { width:15px; height:15px; flex-shrink:0; }
+  .sidebar-foot { margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
+
+  /* ── Main ── */
+  .main { flex:1; padding:28px 32px; overflow-x:hidden; }
+  [data-shell="modern"] .main { padding-bottom:104px; }
+  .page-head { margin-bottom:24px; }
+  .page-head .kick { margin-bottom:10px; }
+  .page-desc { font-size:12.5px; color:var(--text-secondary); margin-top:6px; max-width:62ch; }
+  section + section { margin-top:28px; }
+  h2.sec { font:700 15px Inter,sans-serif; color:var(--text-primary); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+  h2.sec::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── Topbar ── */
+  .topbar { height:var(--topbar-h); display:flex; align-items:center; gap:14px; padding:0 20px;
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20;
+    background:color-mix(in srgb, var(--bg-base) 82%, transparent); backdrop-filter:blur(12px); }
+  [data-shell="modern"] .topbar { margin:12px 16px 0; border-radius:14px; border:1px solid var(--border); box-shadow:var(--shadow-md); }
+  .topbar .t { font:700 13px Inter,sans-serif; color:var(--text-primary); }
+  .grow { flex:1; }
+
+  /* ── Rejillas de demo ── */
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
+  .two { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .swatches { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .sw { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .sw i { display:block; height:44px; }
+  .sw b { display:block; padding:7px 10px 2px; font:600 11px Inter,sans-serif; color:var(--text-primary); }
+  .sw code { display:block; padding:0 10px 8px; font:400 10.5px ui-monospace,monospace; color:var(--text-muted); }
+
+  /* ── KPI ── */
+  .kpi { background:var(--frame-bg); border:1px solid var(--border); border-radius:14px; padding:12px 16px 14px;
+    display:flex; flex-direction:column; gap:3px;
+    transition:transform .18s cubic-bezier(.22,.8,.28,1), border-color .18s, box-shadow .18s; }
+  @media (hover:hover) { .kpi:hover { transform:translateY(-3px); border-color:var(--hover-border); box-shadow:0 14px 32px rgba(0,0,0,.32); } }
+  [data-theme="light"] .kpi:hover { box-shadow:0 14px 32px rgba(60,50,35,.12); }
+  .kpi-label { font:600 11.5px Inter,sans-serif; letter-spacing:.02em; color:var(--text-secondary); }
+  .kpi-value { font:800 30px Inter,sans-serif; letter-spacing:-.03em; line-height:1; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+  .kpi-unit { font-size:14px; margin-left:3px; color:var(--text-muted); font-weight:400; }
+  .kpi-sub { font-size:10.5px; color:var(--text-muted); margin-top:6px; }
+  .spark { height:26px; margin-top:8px; display:block; width:100%; }
+
+  /* ── Card ── */
+  .card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:18px 20px; }
+  .card-header { display:flex; align-items:center; gap:10px; padding-bottom:12px; margin-bottom:12px;
+    border-bottom:1px solid var(--border); font:700 12.5px Inter,sans-serif; color:var(--text-primary); }
+  .ic { width:32px; height:32px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center;
+        border:1px solid var(--border-2); background:var(--bg-surface); color:var(--text-primary); flex-shrink:0; }
+  .ic svg { width:15px; height:15px; opacity:.7; }
+
+  /* ── Ranking ── */
+  .podium { display:grid; grid-template-columns:1fr 1.14fr 1fr; gap:14px; align-items:end; }
+  .pod { background:var(--frame-bg); border:1px solid var(--border); border-radius:14px; padding:14px; text-align:center;
+         transition:transform .2s cubic-bezier(.22,.8,.28,1), border-color .2s, box-shadow .2s; }
+  .pod:hover { transform:translateY(-3px); border-color:var(--hover-border); box-shadow:0 14px 32px rgba(0,0,0,.32); }
+  .pod.first { border-color:var(--brand-border); padding:20px 14px; }
+  .rank-pos { width:26px; height:26px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+    background:var(--bg-surface-2); border:1px solid var(--border); font:800 12px Inter,sans-serif;
+    font-variant-numeric:tabular-nums; color:var(--text-primary); }
+  .av { width:46px; height:46px; border-radius:999px; border:1px solid var(--border-2); background:var(--bg-surface-2);
+        display:inline-flex; align-items:center; justify-content:center; font:700 15px Inter,sans-serif; color:var(--text-secondary); margin:10px 0 8px; }
+  .pod b { display:block; font:700 12.5px Inter,sans-serif; color:var(--text-primary); }
+  .pod .v { display:block; font:800 20px Inter,sans-serif; letter-spacing:-.03em; color:var(--text-primary);
+            font-variant-numeric:tabular-nums; margin:6px 0 8px; }
+  .table { width:100%; border-collapse:collapse; margin-top:16px; }
+  .table th { font:700 10.5px Inter,sans-serif; text-transform:uppercase; letter-spacing:.12em; color:var(--text-muted);
+              text-align:left; padding:10px 12px; border-bottom:1px solid var(--border-2); }
+  .table td { font-size:13px; color:var(--text-primary); padding:11px 12px; border-bottom:1px solid var(--border); }
+  .table .num { text-align:right; font-variant-numeric:tabular-nums; }
+  .table tbody tr:hover { background:rgba(255,255,255,.03); }
+  [data-theme="light"] .table tbody tr:hover { background:rgba(15,20,30,.025); }
+
+  /* ── Filas ── */
+  .row { display:flex; align-items:center; gap:14px; padding:14px 18px; background:var(--bg-card);
+    border:1px solid var(--border); border-left:3px solid transparent; border-radius:10px;
+    transition:transform .18s cubic-bezier(.22,.8,.28,1), border-color .18s, box-shadow .18s; }
+  .row + .row { margin-top:8px; }
+  .row:hover { transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.30); }
+  .row.is-pending { border-left-color:var(--c-amber2); }
+  .row.is-ok { border-left-color:var(--brand); }
+  .row.is-hot { border-left-color:var(--c-red); }
+  .thumb { width:64px; height:36px; border-radius:6px; background:var(--bg-surface-2); border:1px solid var(--border); flex-shrink:0; }
+
+  /* ── Drop zone ── */
+  .drop { position:relative; border:1.5px dashed var(--border-2); border-radius:16px; padding:36px 24px; text-align:center;
+    background:radial-gradient(var(--dots) 1px, transparent 1px) -1px -1px / 12px 12px, var(--frame-bg); }
+
+  /* ── Dock ── */
+  .dock { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:60;
+    display:none; align-items:flex-end; gap:6px; padding:8px 10px; border-radius:20px;
+    background:var(--dock-bg); border:1px solid var(--dock-border); box-shadow:var(--dock-shadow);
+    backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%); }
+  [data-shell="modern"] .dock { display:flex; }
+  .dock::before { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; background:var(--sheen); }
+  .dock-item { position:relative; z-index:1; width:44px; height:44px; border:none; border-radius:13px;
+    background:transparent; color:var(--text-secondary); cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:transform .18s cubic-bezier(.22,.8,.28,1), background .18s, color .18s; }
+  .dock-item svg { width:22px; height:22px; }
+  @media (hover:hover) {
+    .dock-item:hover { transform:translateY(-9px) scale(1.18); color:var(--text-primary); background:var(--bg-surface-2); }
+    .dock-item:hover + .dock-item, .dock-item:has(+ .dock-item:hover) { transform:translateY(-4px) scale(1.08); }
+    .dock-item:hover .dock-tip { opacity:1; transform:translateX(-50%) translateY(0); }
+  }
+  .dock-item.is-active { color:var(--text-primary); background:var(--bg-surface-2); }
+  .dock-item.is-active::after { content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
+    width:4px; height:4px; border-radius:50%; background:var(--text-muted); }
+  .dock-sep { width:1px; align-self:stretch; margin:6px 4px; background:var(--border-2); }
+  .dock-tip { position:absolute; bottom:calc(100% + 12px); left:50%; transform:translateX(-50%) translateY(4px);
+    padding:5px 10px; border-radius:8px; white-space:nowrap; background:var(--bg-elevated);
+    border:1px solid var(--border-2); box-shadow:var(--shadow-md);
+    font:600 11px Inter,sans-serif; color:var(--text-primary); opacity:0; pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease; }
+  @media (max-width:720px) {
+    .dock { left:12px; right:12px; bottom:12px; transform:none; justify-content:space-around; gap:0; border-radius:18px; }
+    .dock-item:hover { transform:none; } .dock-tip { display:none; }
+    .sidebar { display:none; } .main { padding:20px 16px 104px; }
+  }
+
+  /* ── Shell picker ── */
+  .shell-picker { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .shell-opt { text-align:left; cursor:pointer; padding:12px; background:var(--bg-card);
+    border:1px solid var(--border); border-radius:14px; color:inherit; font:inherit;
+    transition:transform .18s cubic-bezier(.22,.8,.28,1), border-color .18s, box-shadow .18s; }
+  .shell-opt:hover, .shell-opt.is-selected { transform:translateY(-2px); border-color:var(--hover-border); box-shadow:var(--hover-shadow); }
+  .shell-opt b { display:block; font-size:12.5px; margin-top:10px; color:var(--text-primary); }
+  .shell-opt small { font-size:11.5px; color:var(--text-secondary); }
+  .shell-preview { display:block; height:92px; border-radius:10px; border:1px solid var(--border);
+    background:radial-gradient(var(--dots) 1px, transparent 1px) -1px -1px / 8px 8px, var(--frame-bg);
+    position:relative; overflow:hidden; }
+  .shell-preview--classic::before { content:''; position:absolute; left:0; top:0; bottom:0; width:26%;
+    background:var(--bg-surface-2); border-right:1px solid var(--border); }
+  .shell-preview--modern::after { content:''; position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+    width:52%; height:16px; border-radius:8px; background:var(--bg-surface-3); border:1px solid var(--border-2); }
+
+  .prog { height:6px; border-radius:999px; background:var(--bg-surface-2); overflow:hidden; margin-top:8px; }
+  .prog i { display:block; height:100%; border-radius:999px; background:var(--text-primary); }
+  .stack { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="mark">C</span>
+      <span class="title">CLIPS</span>
+    </div>
+    <nav class="menu">
+      <a class="item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</a>
+      <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>Subir clip</a>
+      <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5v17l14-8.5z"/></svg>Mis clips</a>
+      <span class="sep">Competición</span>
+      <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0z"/><path d="M6 6H4a2 2 0 0 0 0 4h2"/><path d="M18 6h2a2 2 0 0 1 0 4h-2"/></svg>Ranking</a>
+      <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h10M4 14h9"/><path d="M18.5 5.5A7.5 7.5 0 0 0 7 12a7.5 7.5 0 0 0 11.5 6.5"/></svg>Incentivos</a>
+      <span class="sep">Cuenta</span>
+      <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.18V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 7.26 19.4l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8.4l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 10 4.6V4.5a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 2.82 1.18l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 20.91 10H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Ajustes</a>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="btn-secondary" style="width:100%" onclick="togTheme()">Cambiar tema</button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <div class="topbar">
+      <span class="t">Sistema de diseño</span>
+      <span class="grow"></span>
+      <button class="btn-secondary" onclick="togShell()">Modo: <b id="shellName">clásico</b></button>
+      <button class="btn-primary" onclick="togTheme()">Tema</button>
+    </div>
+
+    <main class="main dots">
+      <header class="page-head">
+        <span class="kick">Referencia viva</span>
+        <h1 class="page-title">Todo el sistema, en una página.</h1>
+        <p class="page-desc">Cambia de tema y de modo de panel arriba a la derecha. Todo lo que ves usa
+          únicamente <code class="mono">tokens/tokens.css</code>.</p>
+        <div class="stack" style="margin-top:14px">
+          <span class="pill-live"><span class="d"></span> Semana activa</span>
+          <span class="pill">Hoy</span>
+          <span class="chip">Aprobado</span>
+          <span class="chip off">Pendiente</span>
+          <span class="tag">TikTok</span>
+        </div>
+      </header>
+
+      <!-- KPIs dentro de un marco con puntitos -->
+      <section>
+        <h2 class="sec">Marco con puntitos + KPIs opacos</h2>
+        <div class="frame">
+          <div class="kpi-row">
+            <article class="kpi">
+              <span class="kpi-label">Views totales</span>
+              <span class="kpi-value">184.2<span class="kpi-unit">K</span></span>
+              <svg class="spark" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0 22 L15 19 L30 20 L45 13 L60 15 L75 8 L90 10 L105 4 L120 2" fill="none" stroke="var(--text-primary)" stroke-width="1.4" opacity=".75"/>
+                <circle cx="120" cy="2" r="2.2" fill="var(--text-primary)"/>
+              </svg>
+              <span class="kpi-sub">últimos 7 días</span>
+            </article>
+            <article class="kpi">
+              <span class="kpi-label">Clips subidos</span>
+              <span class="kpi-value">6</span>
+              <span class="kpi-sub">esta semana</span>
+            </article>
+            <article class="kpi">
+              <span class="kpi-label">Aprobados</span>
+              <span class="kpi-value">5</span>
+              <span class="kpi-sub">1 pendiente de revisión</span>
+            </article>
+            <article class="kpi">
+              <span class="kpi-label">Puesto</span>
+              <span class="kpi-value">#17</span>
+              <span class="kpi-sub">↑ 4 desde el lunes</span>
+            </article>
+            <article class="kpi">
+              <span class="kpi-label">Por cobrar</span>
+              <span class="kpi-value">62<span class="kpi-unit">€</span></span>
+              <span class="kpi-sub">pago el viernes</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cajas -->
+      <section>
+        <h2 class="sec">Cajas: cristal, dashed y drop</h2>
+        <div class="two">
+          <article class="glass spot" style="padding:18px 20px">
+            <div class="card-header" style="border:0;padding:0;margin-bottom:12px">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5v17l14-8.5z"/></svg></span>
+              <span>Cristal con sheen</span>
+              <span style="flex:1"></span>
+              <span class="pill">.glass</span>
+            </div>
+            <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">
+              Degradado diagonal, borde al 10 %, blur 14 y brillo en dos esquinas opuestas. Pasa el ratón: lift + spotlight.
+            </p>
+            <div class="sub">
+              <b style="font-size:11.5px;color:var(--text-primary)">Zona secundaria</b>
+              <p style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">Borde discontinuo <code class="mono">.sub</code>: esto es extra.</p>
+            </div>
+            <div class="frame-dashed" style="margin-top:10px">
+              <b style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">Análisis automático</b>
+              <p style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">Discontinua <em>con</em> puntitos: <code class="mono">.frame-dashed</code>.</p>
+            </div>
+          </article>
+
+          <article class="drop">
+            <svg class="ants" aria-hidden="true"><rect style="rx:16"/></svg>
+            <div style="position:relative;z-index:1">
+              <span class="ic" style="width:40px;height:40px;border-radius:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;opacity:1"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></span>
+              <p style="margin-top:12px;font:600 13px Inter,sans-serif;color:var(--text-primary)">Arrastra tu clip</p>
+              <p style="margin-top:4px;font-size:11.5px;color:var(--text-muted)">MP4 o MOV · máx 500 MB</p>
+              <button class="btn-primary" style="margin-top:14px">Seleccionar archivo</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Ranking -->
+      <section>
+        <h2 class="sec">Ranking</h2>
+        <div class="frame">
+          <div class="podium">
+            <div class="pod">
+              <span class="rank-pos">2</span><span class="av">MR</span>
+              <b>@martarec</b><span class="v">940K</span><span class="chip">18 clips</span>
+            </div>
+            <div class="pod first">
+              <span class="rank-pos">1</span><span class="av">KV</span>
+              <b>@kevclips</b><span class="v">1.24M</span>
+              <div class="stack" style="justify-content:center"><span class="chip">24 clips</span><span class="chip">+12 %</span></div>
+            </div>
+            <div class="pod">
+              <span class="rank-pos">3</span><span class="av">NA</span>
+              <b>@nadia</b><span class="v">780K</span><span class="chip">15 clips</span>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead><tr><th style="width:56px">#</th><th>Clipper</th><th class="num">Views</th><th class="num">Clips</th><th class="num">Eng.</th><th class="num">Δ</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rank-pos">4</span></td><td>@rubenh</td><td class="num">712 400</td><td class="num">14</td><td class="num">6,2 %</td><td class="num">↑2</td></tr>
+              <tr><td><span class="rank-pos">5</span></td><td>@laiaq</td><td class="num">688 120</td><td class="num">12</td><td class="num">5,9 %</td><td class="num">↓1</td></tr>
+              <tr><td><span class="rank-pos">6</span></td><td>@dvd</td><td class="num">604 980</td><td class="num">17</td><td class="num">4,4 %</td><td class="num">↑5</td></tr>
+            </tbody>
+          </table>
+
+          <div class="sub" style="margin-top:14px;display:flex;align-items:center;gap:14px">
+            <span class="rank-pos">17</span>
+            <b style="font-size:12.5px;color:var(--text-primary);flex:1">@tu_handle</b>
+            <span class="tnum" style="font-size:13px">184 210</span>
+            <span class="tnum" style="font-size:13px;color:var(--text-secondary)">6 clips</span>
+            <span class="chip">↑4</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filas -->
+      <section>
+        <h2 class="sec">Cola de revisión — el borde izquierdo es la única señal de color</h2>
+        <div class="row is-pending">
+          <span class="thumb"></span>
+          <div style="flex:1;min-width:0">
+            <b style="font-size:12.5px;display:block;color:var(--text-primary)">Reacción al clutch del último round</b>
+            <span style="font-size:11.5px;color:var(--text-secondary)">@kevclips · TikTok · hace 2 h</span>
+          </div>
+          <span class="tnum" style="font-size:13px">84 210</span>
+          <span class="chip off">Pendiente</span>
+          <button class="btn-ghost" style="padding:7px 12px;border-radius:8px;font:500 12.5px Inter,sans-serif;cursor:pointer">Rechazar</button>
+          <button class="btn-primary" style="padding:7px 14px">Aprobar</button>
+        </div>
+        <div class="row is-ok">
+          <span class="thumb"></span>
+          <div style="flex:1;min-width:0">
+            <b style="font-size:12.5px;display:block;color:var(--text-primary)">El momento del susto</b>
+            <span style="font-size:11.5px;color:var(--text-secondary)">@nadia · YouTube · ayer</span>
+          </div>
+          <span class="tnum" style="font-size:13px">312 880</span>
+          <span class="chip">Aprobado</span>
+        </div>
+        <div class="row is-hot">
+          <span class="thumb"></span>
+          <div style="flex:1;min-width:0">
+            <b style="font-size:12.5px;display:block;color:var(--text-primary)">Rage quit en directo</b>
+            <span style="font-size:11.5px;color:var(--text-secondary)">@dvd · Instagram · hace 5 h</span>
+          </div>
+          <span class="tnum" style="font-size:13px">1 204 000</span>
+          <span class="chip">Viral</span>
+        </div>
+      </section>
+
+      <!-- Incentivo -->
+      <section>
+        <h2 class="sec">Incentivos</h2>
+        <div class="two">
+          <article class="glass spot" style="padding:18px 20px">
+            <div class="card-header" style="border:0;padding:0;margin-bottom:14px">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span>
+              <span>Clip más viral</span><span style="flex:1"></span><span class="pill">Vas 3º</span>
+            </div>
+            <div style="font:800 30px Inter,sans-serif;letter-spacing:-.03em;line-height:1;color:var(--text-primary)">200<span class="kpi-unit" style="font-size:18px">€</span></div>
+            <p style="font-size:12px;color:var(--text-secondary);margin-top:8px">Al clip con más views de la semana.</p>
+            <div class="sub" style="margin-top:14px">
+              <b style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)">Va ganando</b>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+                <span class="av" style="width:26px;height:26px;font-size:10px;margin:0">KV</span>
+                <b style="font-size:12.5px;color:var(--text-primary);flex:1">@kevclips</b>
+                <span class="tnum" style="font-size:12.5px">1 240 000</span>
+              </div>
+              <div class="prog"><i style="width:78%"></i></div>
+              <p style="font-size:11px;color:var(--text-muted);margin-top:8px">Te faltan 268K views.</p>
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:12px" class="tnum">Cierra en 3 d 04 h</p>
+          </article>
+
+          <article class="glass" style="padding:18px 20px">
+            <div class="card-header" style="border:0;padding:0;margin-bottom:14px">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0z"/><path d="M6 6H4a2 2 0 0 0 0 4h2"/><path d="M18 6h2a2 2 0 0 1 0 4h-2"/></svg></span>
+              <span>Más clips subidos</span><span style="flex:1"></span><span class="pill">No participas</span>
+            </div>
+            <div style="font:800 30px Inter,sans-serif;letter-spacing:-.03em;line-height:1;color:var(--text-primary)">200<span class="kpi-unit" style="font-size:18px">€</span></div>
+            <p style="font-size:12px;color:var(--text-secondary);margin-top:8px">A quien más clips apruebe.</p>
+            <div class="sub" style="margin-top:14px">
+              <b style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)">Va ganando</b>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+                <span class="av" style="width:26px;height:26px;font-size:10px;margin:0">DV</span>
+                <b style="font-size:12.5px;color:var(--text-primary);flex:1">@dvd</b>
+                <span class="tnum" style="font-size:12.5px">24 clips</span>
+              </div>
+              <div class="prog"><i style="width:100%"></i></div>
+            </div>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:12px" class="tnum">Cierra en 3 d 04 h</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Selector de shell -->
+      <section>
+        <h2 class="sec">Ajustes → Apariencia</h2>
+        <article class="glass" style="padding:18px 20px">
+          <div class="shell-picker">
+            <button class="shell-opt is-selected" id="optClassic" onclick="setShell('classic')">
+              <span class="shell-preview shell-preview--classic" aria-hidden="true"></span>
+              <b>Clásico</b><small>Barra lateral fija. Más denso.</small>
+            </button>
+            <button class="shell-opt" id="optModern" onclick="setShell('modern')">
+              <span class="shell-preview shell-preview--modern" aria-hidden="true"></span>
+              <b>Modern</b><small>Dock flotante abajo. Más aire.</small>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- Botones e inputs -->
+      <section>
+        <h2 class="sec">Controles</h2>
+        <div class="two">
+          <article class="card">
+            <div class="card-header">Botones</div>
+            <div class="stack">
+              <button class="btn-primary">Primario</button>
+              <button class="btn-secondary">Secundario</button>
+              <button class="btn-ghost" style="padding:9px 14px;border-radius:8px;font:500 13px Inter,sans-serif;cursor:pointer">Fantasma</button>
+              <button class="btn-primary" disabled>Desactivado</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-header">Campos</div>
+            <label class="label" for="q">Buscar clip</label>
+            <input id="q" class="input" placeholder="Título, clipper o enlace…">
+            <label class="label" for="n" style="margin-top:14px">Nota</label>
+            <textarea id="n" class="input" style="border-style:dashed;min-height:70px;resize:vertical" placeholder="Opcional"></textarea>
+          </article>
+        </div>
+      </section>
+
+      <!-- Paleta -->
+      <section>
+        <h2 class="sec">Paleta de datos (solo gráficas y KPIs)</h2>
+        <div class="swatches">
+          <div class="sw"><i style="background:#38bdf8"></i><b>TikTok</b><code>#38bdf8</code></div>
+          <div class="sw"><i style="background:#ef4444"></i><b>YouTube</b><code>#ef4444</code></div>
+          <div class="sw"><i style="background:#e1306c"></i><b>Instagram</b><code>#e1306c</code></div>
+          <div class="sw"><i style="background:#a78bfa"></i><b>Twitch</b><code>#a78bfa</code></div>
+          <div class="sw"><i style="background:#60a5fa"></i><b>Views</b><code>#60a5fa</code></div>
+          <div class="sw"><i style="background:#fbbf24"></i><b>Engagement</b><code>#fbbf24</code></div>
+          <div class="sw"><i style="background:#10b981"></i><b>Marca / aprobado</b><code>#10B981</code></div>
+          <div class="sw"><i style="background:#94a3b8"></i><b>Ruido</b><code>#94a3b8</code></div>
+        </div>
+      </section>
+
+      <p style="margin-top:32px;font-size:11.5px;color:var(--text-muted)">
+        Ver también <a href="login.html" style="color:var(--text-secondary)">login.html</a> y
+        <a href="register.html" style="color:var(--text-secondary)">register.html</a>.
+      </p>
+    </main>
+  </div>
+</div>
+
+<!-- ══ DOCK ══ -->
+<nav class="dock" aria-label="Navegación">
+  <button class="dock-item is-active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span class="dock-tip">Dashboard</span></button>
+  <button class="dock-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg><span class="dock-tip">Subir clip</span></button>
+  <button class="dock-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5v17l14-8.5z"/></svg><span class="dock-tip">Mis clips</span></button>
+  <i class="dock-sep"></i>
+  <button class="dock-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0z"/><path d="M6 6H4a2 2 0 0 0 0 4h2"/><path d="M18 6h2a2 2 0 0 1 0 4h-2"/></svg><span class="dock-tip">Ranking</span></button>
+  <button class="dock-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h10M4 14h9"/><path d="M18.5 5.5A7.5 7.5 0 0 0 7 12a7.5 7.5 0 0 0 11.5 6.5"/></svg><span class="dock-tip">Incentivos</span></button>
+  <button class="dock-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span class="dock-tip">Analítica</span></button>
+  <i class="dock-sep"></i>
+  <button class="dock-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="dock-tip">Perfil</span></button>
+</nav>
+
+<script>
+  const root = document.documentElement;
+  function togTheme(){ root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; }
+  function setShell(s){
+    root.dataset.shell = s;
+    document.getElementById('shellName').textContent = s === 'modern' ? 'modern' : 'clásico';
+    document.getElementById('optClassic').classList.toggle('is-selected', s === 'classic');
+    document.getElementById('optModern').classList.toggle('is-selected', s === 'modern');
+  }
+  function togShell(){ setShell(root.dataset.shell === 'modern' ? 'classic' : 'modern'); }
+
+  // Spotlight de las cards de cristal
+  document.querySelectorAll('.spot').forEach(el => {
+    if(!window.matchMedia('(hover: hover)').matches) return;
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top)  + 'px');
+    });
+  });
+</script>
+</body>
+</html>

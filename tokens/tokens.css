@@ -1,0 +1,457 @@
+/* ============================================================================
+   CLIPPING — DESIGN TOKENS
+   Extraído 1:1 del panel de producción cx.wismify.com (skin mono, v5) el
+   17-sep-2026 y reetiquetado para la app de clipping.
+
+   Filosofía: monocromo neutro (R≈G≈B) + UN solo acento por vista.
+   Dos temas reales (oscuro por defecto, claro diseñado a mano, nunca invertido).
+
+   Uso:  <html data-theme="dark">  ó  <html data-theme="light">
+   Todo componente usa var(--…). Nunca un hex directo salvo:
+     1. el acento de marca   2. los colores de DATOS (gráficas/KPIs)
+   ============================================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   1. OSCURO (por defecto)
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* — Lienzo y superficies — */
+  --bg-base:        #161617;  /* negro NEUTRO "no tan oscuro": separa del cristal */
+  --bg-surface:     rgba(255,255,255,0.045);
+  --bg-surface-2:   rgba(255,255,255,0.07);
+  --bg-surface-3:   rgba(255,255,255,0.10);
+  --bg-input:       rgba(0,0,0,0.28);
+  --bg-hover:       rgba(255,255,255,0.055);
+  --bg-card:        rgba(255,255,255,0.04);
+  --bg-card-hover:  rgba(255,255,255,0.07);
+  --bg-elevated:    #1c1c1e;   /* modales, popovers, menús */
+  --frame-bg:       #1c1c1e;   /* marcos que ENGLOBAN otras cajas */
+
+  /* — Bordes — */
+  --border:         rgba(255,255,255,0.09);
+  --border-2:       rgba(255,255,255,0.16);  /* también el color de los DASHED */
+  --border-soft:    rgba(255,255,255,0.05);
+  --border-mid:     rgba(255,255,255,0.08);
+
+  /* — Texto — */
+  --text-primary:   #f2f4f6;
+  --text-secondary: rgba(255,255,255,0.62);
+  --text-muted:     rgba(255,255,255,0.40);
+  --text-muted-2:   rgba(255,255,255,0.30);
+  --text-inverse:   #0b0d10;
+
+  /* — Acento NEUTRO (el 95 % de la UI) — */
+  --accent:         #d7dadf;
+  --accent-hover:   #ffffff;
+  --accent-muted:   rgba(255,255,255,0.08);
+  --accent-border:  rgba(255,255,255,0.20);
+
+  /* — Acento de MARCA: UN solo elemento por vista —
+       Cámbialo aquí y cambia toda la app. Wismify usa esmeralda #10B981. */
+  --brand:          #10B981;
+  --brand-2:        #059669;
+  --brand-rgb:      16,185,129;
+  --brand-soft:     rgba(16,185,129,0.10);
+  --brand-border:   rgba(16,185,129,0.35);
+  --brand-glow:     0 4px 16px rgba(16,185,129,0.30);
+
+  /* — Cristal (la FIRMA de la marca) — */
+  --glass-grad:   linear-gradient(165deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.014) 38%, rgba(8,10,14,0.42) 100%);
+  --glass-border: rgba(255,255,255,0.10);
+  --glass-shadow: 0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.28);
+  /* brillo en DOS esquinas diagonalmente opuestas — obligatorio */
+  --sheen: radial-gradient(160px 100px at 0% 0%,   rgba(255,255,255,0.10), rgba(255,255,255,0.035) 45%, transparent 75%),
+           radial-gradient(160px 100px at 100% 100%, rgba(255,255,255,0.08), rgba(255,255,255,0.028) 45%, transparent 75%);
+  --hover-border: rgba(255,255,255,0.20);
+  --hover-shadow: 0 26px 70px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.28);
+
+  /* — Botón primario: INVERTIDO (claro sobre oscuro) — */
+  --btn-primary-bg:   #f0f2f5;
+  --btn-primary-text: #0b0d10;
+
+  /* — Textura de puntos — */
+  --dots: rgba(255,255,255,0.05);
+
+  /* — Chips de estado neutralizados (en mono TODO estado es gris) — */
+  --chip-bg:     rgba(255,255,255,0.06);
+  --chip-text:   rgba(255,255,255,0.72);
+  --chip-border: rgba(255,255,255,0.16);
+
+  /* — Sombras — */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.40);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.50);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.60);
+
+  /* — Navegación — */
+  --sidebar-bg:    linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.012) 55%, rgba(0,0,0,0.25) 100%);
+  --nav-hover-bg:  rgba(255,255,255,0.045);
+  --nav-active-bg: linear-gradient(165deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+  --dock-bg:       linear-gradient(165deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+  --dock-border:   rgba(255,255,255,0.14);
+  --dock-shadow:   0 22px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.12);
+  --logo-filter:   grayscale(1) brightness(1.4);
+
+  /* — Overlay de modal — */
+  --overlay: rgba(3,4,5,0.50);
+
+  /* — Geometría — */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 72px;
+  --topbar-h: 56px;
+
+  /* — Tiempos — */
+  --t-fast: 0.15s ease;
+  --t-mid:  0.25s ease;
+  --t-lift: 0.22s cubic-bezier(.22,.8,.28,1);
+}
+
+/* Lienzo: dos glows fijos muy suaves. NUNCA quitarlos: dan profundidad. */
+body {
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(620px 440px at 12% -6%,  rgba(255,255,255,0.045), transparent 70%),
+    radial-gradient(520px 400px at 100% 106%, rgba(255,255,255,0.035), transparent 70%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. CLARO — diseñado, no invertido.
+      Lienzo BLANCO PURO; el "blanco roto" #f4f2ee se reserva para las
+      cajas-marco que engloban otras cajas. Sombras CÁLIDAS (60,50,35).
+   ───────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base:        #ffffff;
+  --bg-surface:     #ffffff;
+  --bg-surface-2:   #f7f5f1;
+  --bg-surface-3:   #f4f2ee;
+  --bg-input:       #ffffff;
+  --bg-hover:       rgba(20,18,14,0.045);
+  --bg-card:        #ffffff;
+  --bg-card-hover:  #faf9f6;
+  --bg-elevated:    #ffffff;
+  --frame-bg:       #f4f2ee;
+
+  --border:         rgba(15,20,30,0.10);
+  --border-2:       rgba(15,20,30,0.20);
+  --border-soft:    rgba(15,20,30,0.06);
+  --border-mid:     rgba(15,20,30,0.08);
+
+  --text-primary:   #14181f;
+  --text-secondary: rgba(20,24,31,0.62);
+  --text-muted:     rgba(20,24,31,0.42);
+  --text-muted-2:   rgba(20,24,31,0.32);
+  --text-inverse:   #f4f6f8;
+
+  --accent:         #3a3d42;
+  --accent-hover:   #14181f;
+  --accent-muted:   rgba(15,20,30,0.06);
+  --accent-border:  rgba(15,20,30,0.18);
+
+  --brand-soft:     rgba(16,185,129,0.10);
+  --brand-border:   rgba(16,185,129,0.30);
+
+  --glass-grad:   linear-gradient(165deg, #ffffff 0%, #ffffff 42%, #faf8f4 100%);
+  --glass-border: rgba(20,18,14,0.10);
+  --glass-shadow: 0 14px 40px rgba(60,50,35,0.09), inset 0 1px 0 rgba(255,255,255,0.9);
+  --sheen: radial-gradient(160px 100px at 0% 0%,   rgba(255,255,255,0.9), rgba(255,255,255,0.4) 45%, transparent 75%),
+           radial-gradient(160px 100px at 100% 100%, rgba(250,248,244,0.8), rgba(250,248,244,0.25) 45%, transparent 75%);
+  --hover-border: rgba(20,18,14,0.20);
+  --hover-shadow: 0 20px 50px rgba(60,50,35,0.14), inset 0 1px 0 rgba(255,255,255,0.95);
+
+  --btn-primary-bg:   #16181d;
+  --btn-primary-text: #f4f6f8;
+
+  --dots: rgba(40,34,24,0.08);
+
+  --chip-bg:     rgba(15,20,30,0.05);
+  --chip-text:   rgba(20,24,31,0.72);
+  --chip-border: rgba(15,20,30,0.12);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.10);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.15);
+
+  --sidebar-bg:    linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.62) 55%, rgba(233,236,241,0.72) 100%);
+  --nav-hover-bg:  rgba(15,20,30,0.05);
+  --nav-active-bg: linear-gradient(165deg, rgba(255,255,255,0.92), rgba(255,255,255,0.62));
+  --dock-bg:       linear-gradient(165deg, rgba(255,255,255,0.94), rgba(255,255,255,0.72));
+  --dock-border:   rgba(15,20,30,0.12);
+  --dock-shadow:   0 22px 60px rgba(60,50,35,0.16), inset 0 1px 0 rgba(255,255,255,0.95);
+  --logo-filter:   grayscale(1) brightness(0.5);
+
+  --overlay: rgba(40,34,24,0.28);
+}
+
+[data-theme="light"] body {
+  background-image:
+    radial-gradient(620px 440px at 12% -6%,  rgba(120,105,70,0.07), transparent 70%),
+    radial-gradient(520px 400px at 100% 106%, rgba(120,105,70,0.06), transparent 70%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. COLORES CRUDOS — SOLO para datos, gráficas y estados críticos.
+      Prohibido usarlos en botones, hovers, iconos o fondos de UI.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --c-emerald: #10b981;  --c-emerald-rgb: 16,185,129;
+  --c-emerald2:#059669;  --c-emerald2-rgb: 5,150,105;
+  --c-green:   #22c55e;  --c-green-rgb: 34,197,94;
+  --c-green2:  #34d399;  --c-green2-rgb: 52,211,153;
+  --c-mint:    #6ee7b7;  --c-mint-rgb: 110,231,183;
+  --c-red:     #ef4444;  --c-red-rgb: 239,68,68;
+  --c-red2:    #f87171;  --c-red2-rgb: 248,113,113;
+  --c-red4:    #fca5a5;  --c-red4-rgb: 252,165,165;
+  --c-amber:   #f59e0b;  --c-amber-rgb: 245,158,11;
+  --c-amber2:  #fbbf24;  --c-amber2-rgb: 251,191,36;
+  --c-amber4:  #fde68a;  --c-amber4-rgb: 253,230,138;
+  --c-orange:  #f97316;  --c-orange-rgb: 249,115,22;
+  --c-violet:  #a78bfa;  --c-violet-rgb: 167,139,250;
+  --c-purple:  #a855f7;  --c-purple-rgb: 168,85,247;
+  --c-indigo:  #6366f1;  --c-indigo-rgb: 99,102,241;
+  --c-blue:    #3b82f6;  --c-blue-rgb: 59,130,246;
+  --c-blue2:   #60a5fa;  --c-blue2-rgb: 96,165,250;
+  --c-sky:     #38bdf8;  --c-sky-rgb: 56,189,248;
+  --c-pink:    #f472b6;  --c-pink-rgb: 244,114,182;
+  --c-pink2:   #e1306c;  --c-pink2-rgb: 225,48,108;  /* Instagram */
+  --c-slate:   #94a3b8;  --c-slate-rgb: 148,163,184;
+  --c-teal:    #2dd4bf;  --c-teal-rgb: 45,212,191;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4. UTILIDADES CANÓNICAS
+   ───────────────────────────────────────────────────────────── */
+
+/* 4.1 · Cristal — el contenedor de marca */
+.glass {
+  position: relative; overflow: hidden;
+  background: var(--glass-grad);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  transition: transform var(--t-lift), border-color .22s, box-shadow .22s;
+}
+.glass::before {                  /* FIRMA: brillo en esquinas opuestas */
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; background: var(--sheen); z-index: 0;
+}
+.glass > * { position: relative; z-index: 1; }
+@media (hover: hover) {
+  .glass:hover { transform: translateY(-2px); border-color: var(--hover-border); box-shadow: var(--hover-shadow); }
+}
+
+/* 4.2 · Fondos de puntos */
+.dots      { background-image: radial-gradient(var(--dots) 1px, transparent 1px); background-size: 14px 14px; }
+.dots-sm   { background-image: radial-gradient(var(--dots) 1px, transparent 1px); background-size: 9px 9px;  background-position: -1px -1px; }
+.dots-md   { background-image: radial-gradient(var(--dots) 1px, transparent 1px); background-size: 12px 12px; background-position: -1px -1px; }
+.dots-lg   { background-image: radial-gradient(var(--dots) 1px, transparent 1px); background-size: 16px 16px; }
+/* Retícula de auth: 28px + máscara elíptica que la desvanece hacia los bordes */
+.dots-auth {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+          mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+}
+[data-theme="light"] .dots-auth { background-image: radial-gradient(circle, rgba(15,23,42,0.10) 1px, transparent 1px); }
+
+/* 4.3 · Caja de LÍNEA DISCONTINUA = zona secundaria / extra */
+.sub {
+  border: 1px dashed var(--border-2);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.015);
+  padding: 12px 14px;
+}
+[data-theme="light"] .sub { background: rgba(15,20,30,0.02); }
+
+/* 4.4 · Caja discontinua CON puntitos dentro (resumen IA, marco de config) */
+.frame-dashed {
+  border: 1px dashed var(--border-2);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background-color: rgba(255,255,255,0.035);
+  background-image: radial-gradient(var(--dots) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+[data-theme="light"] .frame-dashed { background-color: #fdfcfb; }
+
+/* 4.5 · MARCO que ENGLOBA otras cajas: opaco + puntitos + sombra de cristal.
+         Las cajas de dentro deben ser OPACAS para que no sangren los puntos. */
+.frame {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px 16px 18px;
+  background:
+    radial-gradient(var(--dots) 1px, transparent 1px) -1px -1px / 9px 9px,
+    var(--frame-bg);
+  box-shadow: var(--glass-shadow);
+}
+.frame-lg { border-radius: 16px; padding: 12px;
+  background: radial-gradient(var(--dots) 1px, transparent 1px) -1px -1px / 12px 12px, var(--frame-bg); }
+
+/* 4.6 · Marco de línea discontinua ANIMADA (marching ants).
+         Uso: contenedor position:relative + <svg class="ants"><rect/></svg> 1er hijo. */
+.ants { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: visible; }
+.ants rect {
+  x: 1px; y: 1px; width: calc(100% - 2px); height: calc(100% - 2px);
+  fill: none; stroke: var(--border-2); stroke-width: 1.5;
+  stroke-dasharray: 5 7;
+  animation: ants-move 22s linear infinite;
+}
+@keyframes ants-move { to { stroke-dashoffset: -240; } }
+
+/* 4.7 · Orbes ambientales */
+.amb { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.amb i { position: absolute; display: block; border-radius: 50%; will-change: transform; }
+.amb .o1 { top: -22%; left: -8%;    width: 55vmax; height: 55vmax; filter: blur(70px);
+           background: radial-gradient(circle, rgba(var(--brand-rgb),0.07), transparent 62%);
+           animation: float-a 24s ease-in-out infinite alternate; }
+.amb .o2 { bottom: -25%; right: -10%; width: 50vmax; height: 50vmax; filter: blur(80px);
+           background: radial-gradient(circle, rgba(var(--brand-rgb),0.045), transparent 62%);
+           animation: float-b 32s ease-in-out infinite alternate; }
+.amb .o3 { top: 30%; right: 20%;    width: 30vmax; height: 30vmax; filter: blur(60px);
+           background: radial-gradient(circle, rgba(255,255,255,0.04), transparent 60%);
+           animation: float-c 28s ease-in-out infinite alternate; }
+[data-theme="light"] .amb .o3 { background: radial-gradient(circle, rgba(15,23,42,0.035), transparent 60%); }
+@keyframes float-a { to { transform: translate( 7vmax,  6vmax) scale(1.12); } }
+@keyframes float-b { to { transform: translate(-6vmax, -7vmax) scale(0.92); } }
+@keyframes float-c { to { transform: translate(-8vmax,  5vmax) scale(1.08); } }
+
+/* 4.8 · Spotlight que sigue al ratón (JS setea --mx / --my en px) */
+.spot::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; opacity: 0; transition: opacity .35s ease; z-index: 0;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), rgba(255,255,255,0.06), transparent 65%);
+}
+@media (hover: hover) { .spot:hover::after { opacity: 1; } }
+[data-theme="light"] .spot::after { background: radial-gradient(240px circle at var(--mx,50%) var(--my,0%), rgba(15,23,42,0.045), transparent 65%); }
+
+/* 4.9 · Kicker con línea */
+.kick {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.kick::before { content: ''; width: 22px; height: 1px; background: currentColor; opacity: .6; }
+
+/* 4.10 · Titular de página con degradado de tinta */
+.page-title {
+  font-size: 26px; font-weight: 850; letter-spacing: -0.02em; line-height: 1.12;
+  text-wrap: balance;
+  background: linear-gradient(178deg, var(--text-primary) 32%, var(--text-muted));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 4.11 · Pill de cristal */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 11px; border-radius: var(--radius-pill);
+  background: linear-gradient(165deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.14);
+  color: var(--text-secondary);
+  font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: .02em;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+[data-theme="light"] .pill {
+  background: linear-gradient(165deg, rgba(255,255,255,0.9), rgba(255,255,255,0.55));
+  border-color: rgba(15,20,30,0.12);
+}
+/* Pill de acento — UNA por vista. Punto que late. */
+.pill-live {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 13px; border-radius: var(--radius-pill);
+  border: 1px solid var(--brand-border); background: var(--brand-soft); color: var(--brand);
+  font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+}
+.pill-live .d {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--brand);
+  box-shadow: 0 0 10px rgba(var(--brand-rgb),.7);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:.55; transform:scale(.82) } }
+
+/* 4.12 · Chip de estado (SIEMPRE neutro en mono) */
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  background: var(--chip-bg); color: var(--chip-text); border: 1px solid var(--chip-border);
+  font-size: 10.5px; font-weight: 600; letter-spacing: .3px; white-space: nowrap;
+}
+.chip.off { border-style: dashed; color: var(--text-muted); }
+
+/* 4.13 · Botones */
+.btn-primary {
+  background: var(--btn-primary-bg); color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+  padding: 9px 16px; border-radius: var(--radius-sm);
+  font: 600 13px Inter, sans-serif; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: filter var(--t-fast), transform var(--t-fast);
+}
+.btn-primary:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--accent-muted); border: 1px solid var(--border-2); color: var(--text-primary);
+  padding: 9px 14px; border-radius: var(--radius-sm);
+  font: 500 13px Inter, sans-serif; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--bg-hover); transform: translateY(-1px); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+.btn-primary:disabled, .btn-secondary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+/* 4.14 · Inputs */
+.input {
+  width: 100%; box-sizing: border-box;
+  background: var(--bg-input); color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: 11px;
+  padding: 11px 14px; font: inherit; font-size: 14px; outline: none;
+  transition: border-color var(--t-mid), box-shadow var(--t-mid), background var(--t-mid);
+}
+.input::placeholder { color: rgba(255,255,255,0.28); }
+[data-theme="light"] .input::placeholder { color: rgba(15,23,42,0.35); }
+.input:focus {
+  border-color: rgba(255,255,255,0.32);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+}
+/* Variante de foco con acento — reservada a login/registro */
+.input.brand-focus:focus {
+  border-color: rgba(var(--brand-rgb),0.55);
+  box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.label {
+  display: block; margin-bottom: 6px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted);
+}
+
+/* 4.15 · Números */
+.tnum { font-variant-numeric: tabular-nums; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11.5px; }
+
+/* 4.16 · Movimiento de entrada */
+.fade-in   { animation: fadeIn .3s ease both; }
+.st        { animation: stagger .55s cubic-bezier(.33,1,.68,1) backwards; }
+.lift      { transition: translate .35s cubic-bezier(.22,.8,.28,1); }
+.lift:hover{ translate: 0 -3px; }
+@keyframes fadeIn  { from { opacity:0; transform: translateY(6px) } to { opacity:1; transform:none } }
+@keyframes stagger { from { opacity:0; transform: translateY(10px); filter: blur(6px) } to { opacity:1; transform:none; filter:blur(0) } }
+@keyframes fadeInScale { from { opacity:0; transform: scale(.96) } to { opacity:1; transform:none } }
+
+/* 4.17 · Accesibilidad — todo lo decorativo se apaga */
+@media (prefers-reduced-motion: reduce) {
+  .amb i, .glass, .st, .fade-in, .ants rect, .pill-live .d { animation: none !important; }
+  .glass, .lift { transition: none; }
+}
